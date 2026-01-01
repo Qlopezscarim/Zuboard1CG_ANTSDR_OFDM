@@ -9,6 +9,7 @@
 #include <bitset>
 #include "utils/queue.h"
 #include "configs/rx_config.h"
+#include "energy_detector.h"
 
 namespace po = boost::program_options;
 
@@ -130,6 +131,13 @@ RxConfig rx_config;
 
 //instantiating packet size variable for ref passing - relic of old power thread
 size_t pack_size = rx_config.samples_per_recv;
+size_t grabbed_block_size = rx_config.energy_detector_grabbed_samples;
+
+//instantiating energy detector thread
+std::thread energy_detector_object(ENERGYDETECTOR::energyDetectorThread,
+        std::ref(data_fifo),
+        std::ref(grabbed_block_size)
+);
 
 
 
@@ -178,6 +186,7 @@ std::thread rx_thread_object = RX::rx_thread(
     std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // sleep for 1ms to make
     
     rx_thread_object.join();
+    energy_detector_object.join();
 
 
 

@@ -8,7 +8,7 @@ LDFLAGS = -L/usr/lib -luhd -lboost_program_options
 OBJDIR := ../build
 
 common_hdrs = RX.h
-OBJS = $(OBJDIR)/main.o $(OBJDIR)/RX.o
+OBJS = $(OBJDIR)/main.o $(OBJDIR)/RX.o $(OBJDIR)/energy_detector.o
 
 all: exec
 
