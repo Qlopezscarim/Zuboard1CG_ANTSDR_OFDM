@@ -19,12 +19,24 @@
 #include "utils/queue.h"
 #include "RX.h"
 
-class ENERGYDETECTOR
+//This is determined by a transmit rate of TX of 1MHz, a symbol rate of 800 Ksps, a packet size of 1047 symbols, and a RX of 1MHz
+#define SIZE_BLOCKS_TO_STORE 1500 //when power detector is happy - this is prior to upsample!
+
+class DETECTOR
 {
 public:
+//This is terrible but an assumption of only one POWER_THREAD makes it okay - should be changed later though
+static float 	alpha;
+static float 	power_detector;
+static float 	power_threshold;
+static bool 	block_stored;
+static size_t	block_index;
+static size_t	packet_num;
 //spawns main RX thread according to passes parameters
 static void energyDetectorThread(
         MutexFIFO<std::vector<std::complex<float>>>& data_fifo,
-	size_t& sblocks
+	MutexFIFO<std::vector<std::complex<float>>>& data_fifo2
+//	size_t& sblocks,
+//	SharedPrinter& printer
 	);
 };

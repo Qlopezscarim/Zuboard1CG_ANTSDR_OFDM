@@ -3,12 +3,12 @@
 # Aug 31, 2023
 
 CXX = g++ -I/usr/include
-CPPFLAGS = -O3
+CPPFLAGS = -O3 -DRXOTWSC16 -DRXFC32
 LDFLAGS = -L/usr/lib -luhd -lboost_program_options
 OBJDIR := ../build
 
 common_hdrs = RX.h
-OBJS = $(OBJDIR)/main.o $(OBJDIR)/RX.o $(OBJDIR)/energy_detector.o
+OBJS = $(OBJDIR)/main.o $(OBJDIR)/RX.o $(OBJDIR)/energy_calculator.o $(OBJDIR)/energy_detector.o $(OBJDIR)/file_gen.o
 
 all: exec
 

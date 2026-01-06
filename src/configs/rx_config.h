@@ -7,3 +7,18 @@ struct RxConfig {
 	size_t energy_detector_grabbed_samples = 1000;
 };
 
+
+#include <uhd/types/complex.hpp>
+#include <complex>
+
+#if defined(RXFC64)
+	using rx_cpu_format = std::complex<double>;
+#elif defined(RXFC32)
+	using rx_cpu_format = std::complex<float>;
+#elif defined(RXSC16)
+	using rx_cpu_format = uhd::sc16_t;
+#elif defined(RXSC8)
+	using rx_cpu_format = uhd::sc8_t;
+#else
+	#error "No sample type defined"
+#endif

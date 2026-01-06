@@ -9,6 +9,7 @@
 #include <bitset>
 #include "utils/queue.h"
 #include "configs/rx_config.h"
+#include "energy_calculator.h"
 #include "energy_detector.h"
 
 namespace po = boost::program_options;
@@ -24,7 +25,7 @@ void sig_int_handler(int) {
 int UHD_SAFE_MAIN(int argc, char *argv[]) {
     //INPUT HANDLING WITH BOOST
     //TX paramters to be set
-	std::string tx_args, wave_type, tx_ant, tx_subdev, ref, otw, tx_channels;
+	std::string tx_args, wave_type, tx_ant, tx_subdev, ref, tx_channels;
 	double tx_rate, tx_freq, tx_gain, wave_freq, tx_bw;
 	float ampl;
 
@@ -66,7 +67,7 @@ int UHD_SAFE_MAIN(int argc, char *argv[]) {
         ("wave-type", po::value<std::string>(&wave_type)->default_value("CONST"), "waveform type (CONST, SQUARE, RAMP, SINE)")
         ("wave-freq", po::value<double>(&wave_freq)->default_value(0), "waveform frequency in Hz")
         ("ref", po::value<std::string>(&ref)->default_value("internal"), "clock reference (internal, external, mimo)")
-        ("otw", po::value<std::string>(&otw)->default_value("sc16"), "specify the over-the-wire sample mode")
+//        ("otw", po::value<std::string>(&otw)->default_value("sc16"), "specify the over-the-wire sample mode")
         ("tx-channels", po::value<std::string>(&tx_channels)->default_value("0"), "which TX channel(s) to use (specify \"0\", \"1\", \"0,1\", etc)")
         ("rx-channels", po::value<std::string>(&rx_channels)->default_value("0"), "which RX channel(s) to use (specify \"0\", \"1\", \"0,1\", etc)")
         ("tx-int-n", "tune USRP TX with integer-N tuning")
@@ -123,27 +124,64 @@ int UHD_SAFE_MAIN(int argc, char *argv[]) {
 
 /***********************START OF RX CODE*************************************************/
 
-//instantiating FIFO from RX to XXX thread
+//instantiating FIFO from RX to energyDetectorThread
 MutexFIFO<std::vector<std::complex<float>>> data_fifo;
+
+//instantiating FIFO from energyDetectorThread to XXX thread
+MutexFIFO<std::vector<std::complex<float>>> data_fifo_2;
 
 
 RxConfig rx_config;
 
 //instantiating packet size variable for ref passing - relic of old power thread
 size_t pack_size = rx_config.samples_per_recv;
-size_t grabbed_block_size = rx_config.energy_detector_grabbed_samples;
+//size_t grabbed_block_size = rx_config.energy_detector_grabbed_samples;
+
+
+//instantiating energy calculator thread
+//Used for initial debugging an antenna checking - now depreciated
+/*std::thread energy_calculator_object(ENERGYCALCULATOR::energyCalculatorThread,
+        std::ref(data_fifo),
+	std::ref(pack_size)
+       // std::ref(grabbed_block_size)
+);*/
 
 //instantiating energy detector thread
-std::thread energy_detector_object(ENERGYDETECTOR::energyDetectorThread,
+std::thread energy_detector_object(DETECTOR::energyDetectorThread,
         std::ref(data_fifo),
-        std::ref(grabbed_block_size)
+        std::ref(data_fifo_2)
+       // std::ref(grabbed_block_size)
 );
 
+
+//Setting options for RX cpu data types depending on compile options:
+#if defined(RXFC64)
+	std::string cpu_format = "fc64";
+#elif defined(RXFC32)
+	std::string cpu_format = "fc32";
+#elif defined(RXSC16)
+	std::string cpu_format = "sc16";
+#elif defined(RXSC8)
+	std::string cpu_format = "sc8";
+#else
+	#error "Define a RX CPU type in the compile options"
+#endif
+
+//Setting options for RX OTW data types depending on compile options
+#if defined(RXOTWSC16)
+	std::string otw = "sc16";
+#elif defined(RXOTWSC12)
+	std::string otw = "sc12";
+#elif defined(RXOTWSC8)
+        std::string otw	= "sc8";
+#else
+        #error "Define a RX OTW type in the compile options"
+#endif
 
 
 //instantiating RX thread:
 std::thread rx_thread_object = RX::rx_thread(
-        "fc32",
+        cpu_format,
         otw,
         "",
         rx_channels,
@@ -187,6 +225,7 @@ std::thread rx_thread_object = RX::rx_thread(
     
     rx_thread_object.join();
     energy_detector_object.join();
+//    energy_calculator_object.join();
 
 
 
