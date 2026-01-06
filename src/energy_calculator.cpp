@@ -28,7 +28,7 @@ size_t& sblocks
 		for(size_t i = 0; i<sblocks ; i++)
 		{
 			//pass for now
-			total_power = total_power + std::norm(fifo_output[i+1]);
+			total_power = total_power + std::norm(fifo_output[i]);
 		}
 		total_power = total_power/sblocks;
 		std::cout << "The detected average block power was: " << total_power << std::endl;
