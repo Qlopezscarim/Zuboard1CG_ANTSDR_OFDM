@@ -4,12 +4,12 @@ extern bool stop_signal_called;
 
 void ENERGYCALCULATOR::energyCalculatorThread
 (
-MutexFIFO<std::vector<std::complex<float>>>& data_fifo,
+MutexFIFO<std::vector<rx_cpu_format>>& data_fifo,
 size_t& sblocks
 )
 
 {
-	std::vector<std::complex<float>> fifo_output;
+	std::vector<rx_cpu_format> fifo_output;
 
 	while(not stop_signal_called)
 	{

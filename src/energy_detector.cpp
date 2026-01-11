@@ -10,15 +10,15 @@ size_t	DETECTOR::block_index 		= 0;
 size_t	DETECTOR::packet_num		= 0;
 
 void DETECTOR::energyDetectorThread
-(MutexFIFO<std::vector<std::complex<float>>>& data_fifo,
-MutexFIFO<std::vector<std::complex<float>>>& data_fifo2
+(MutexFIFO<std::vector<rx_cpu_format>>& data_fifo,
+MutexFIFO<std::vector<rx_cpu_format>>& data_fifo2
 //size_t& sblocks,
 //SharedPrinter& printer
 )
 {
 
-	std::vector<std::complex<float>> fifo_output;
-	std::vector<std::complex<float>> buff (SIZE_BLOCKS_TO_STORE, std::complex<float>(0.0f, 0.0f));
+	std::vector<rx_cpu_format> fifo_output;
+	std::vector<rx_cpu_format> buff (SIZE_BLOCKS_TO_STORE, std::complex<float>(0.0f, 0.0f));
 
 	while(not stop_signal_called)
 	{
@@ -52,7 +52,7 @@ MutexFIFO<std::vector<std::complex<float>>>& data_fifo2
 			power_detector = alpha*power_detector + (1-alpha)*std::norm(fifo_output[i]);
 			//IIR filter
 
-			std::cout << "Current power reading is: " << power_detector << std::endl;
+			//std::cout << "Current power reading is: " << power_detector << std::endl;
 
 			if(power_detector > power_threshold || block_stored == true)
 			{
@@ -78,20 +78,15 @@ MutexFIFO<std::vector<std::complex<float>>>& data_fifo2
                                                 buff[i] = buff[i]/rms;
                                         }
 
-					//want to store which "packet" we are on
-					//buff[0] = std::complex<float>(packet_num,0.0f);
-
 					//want to push the buffer to FIFO so we can reuse buffer
-					data_fifo2.push(buff);
+					//data_fifo2.push(buff);
 
 					//for debugging
 					//std::cout << "Packet detected and pushed to averaging" << "\n";
 					
 					//reset conditions
-					//may want to make power_threshold 0 for false alarms?
 					block_stored	= false;
 					block_index	= 0;
-					//packet_num	= packet_num + 1;
 				}
 			}
 			else
@@ -103,12 +98,6 @@ MutexFIFO<std::vector<std::complex<float>>>& data_fifo2
 				}*/
 			}
 		}
-		//total_power = total_power/sblocks;
-		//thread safe implementation
-		//printer.print("block number: \t" + std::to_string(fifo_output[0].real()) + " Total power: \t" + std::to_string(total_power));
-		//non-thread safe
-		//std::cout << "\t" << power_detector << "\n";
-		//std::cout << "block number: \t" << fifo_output[0].real() << " Total power: \t" << total_power << std::endl;
 	}
 
 	std::cout << "Graceful exit of energyDetectorThread" << std::endl;

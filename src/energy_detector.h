@@ -17,6 +17,7 @@
 #include <iostream>
 #include <thread>
 #include "utils/queue.h"
+#include "configs/rx_config.h"
 #include "RX.h"
 
 //This is determined by a transmit rate of TX of 1MHz, a symbol rate of 800 Ksps, a packet size of 1047 symbols, and a RX of 1MHz
@@ -34,8 +35,8 @@ static size_t	block_index;
 static size_t	packet_num;
 //spawns main RX thread according to passes parameters
 static void energyDetectorThread(
-        MutexFIFO<std::vector<std::complex<float>>>& data_fifo,
-	MutexFIFO<std::vector<std::complex<float>>>& data_fifo2
+        MutexFIFO<std::vector<rx_cpu_format>>& data_fifo,
+	MutexFIFO<std::vector<rx_cpu_format>>& data_fifo2
 //	size_t& sblocks,
 //	SharedPrinter& printer
 	);

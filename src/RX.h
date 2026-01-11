@@ -17,6 +17,7 @@
 #include <iostream>
 #include <thread>
 #include "utils/queue.h"
+#include "configs/rx_config.h"
 
 //#define BLOCK_SIZE 1000
 #define REQ_SAMPLES 0 //doing continous
@@ -43,7 +44,7 @@ static std::thread rx_thread(const std::string& cpu_format,
 	std::string& rx_ant,
 	double& settling_time,
 	size_t& sblocks,
-	MutexFIFO<std::vector<std::complex<float>>>& data_fifo);
+	MutexFIFO<std::vector<rx_cpu_format>>& data_fifo);
 
 
 static void rx_worker
@@ -56,7 +57,7 @@ size_t samps_per_buff,
 int num_requested_samples,
 double settling_time,
 std::vector<size_t> rx_channel_nums,
-MutexFIFO<std::vector<std::complex<float>>>& data_fifo //may need to be changed
+MutexFIFO<std::vector<rx_cpu_format>>& data_fifo //may need to be changed
 
 );
 

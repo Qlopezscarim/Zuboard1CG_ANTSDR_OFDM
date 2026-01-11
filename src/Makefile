@@ -3,7 +3,7 @@
 # Aug 31, 2023
 
 CXX = g++ -I/usr/include
-CPPFLAGS = -O3 -DRXOTWSC16 -DRXFC32
+CPPFLAGS = -O3 -DRXOTWSC16 -DRXSC8 -DRXOTWSC8 -DVERBOSERX
 LDFLAGS = -L/usr/lib -luhd -lboost_program_options
 OBJDIR := ../build
 

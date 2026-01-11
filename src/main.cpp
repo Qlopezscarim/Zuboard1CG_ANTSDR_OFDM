@@ -125,10 +125,10 @@ int UHD_SAFE_MAIN(int argc, char *argv[]) {
 /***********************START OF RX CODE*************************************************/
 
 //instantiating FIFO from RX to energyDetectorThread
-MutexFIFO<std::vector<std::complex<float>>> data_fifo;
+MutexFIFO<std::vector<rx_cpu_format>> data_fifo;
 
 //instantiating FIFO from energyDetectorThread to XXX thread
-MutexFIFO<std::vector<std::complex<float>>> data_fifo_2;
+MutexFIFO<std::vector<rx_cpu_format>> data_fifo_2;
 
 
 RxConfig rx_config;
@@ -208,14 +208,17 @@ std::thread rx_thread_object = RX::rx_thread(
 	if(count % 3000 == 0)
 	{
 
-#ifdef VERBOSE
+#ifdef VERBOSETX
 		std::cout << "FIFO from filter_thread to TX_thread:\t\t\t\t" << data_fifo_TX.size() << std::endl;
                 std::cout << "FIFO from modulator_thread to filter_thread:\t\t\t" << data_fifo2_TX.size()<< std::endl;
                 std::cout << "FIFO from producer_thread to modulator_thread:\t\t\t" << data_fifo3_TX.size()<< std::endl;
+#endif
+
+#ifdef VERBOSERX
 		std::cout << "\t\t\t\t\t\t\t\t\t\t\t\t\t|FIFO 1:\t" << data_fifo.size() << std::endl;
-		std::cout << "\t\t\t\t\t\t\t\t\t\t\t\t\t|FIFO 2:\t" << data_fifo2.size()<< std::endl;
-		std::cout << "\t\t\t\t\t\t\t\t\t\t\t\t\t|FIFO 3:\t" << data_fifo3.size()<< std::endl;
-		std::cout << "\t\t\t\t\t\t\t\t\t\t\t\t\t|FIFO Correlator to demodulator " <<  Correlator_to_Demodulator.size() << std::endl;
+		std::cout << "\t\t\t\t\t\t\t\t\t\t\t\t\t|FIFO 2:\t" << data_fifo_2.size()<< std::endl;
+		//std::cout << "\t\t\t\t\t\t\t\t\t\t\t\t\t|FIFO 3:\t" << data_fifo3.size()<< std::endl;
+		//std::cout << "\t\t\t\t\t\t\t\t\t\t\t\t\t|FIFO Correlator to demodulator " <<  Correlator_to_Demodulator.size() << std::endl;
 #endif
 
 	}

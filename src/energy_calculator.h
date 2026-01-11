@@ -24,7 +24,7 @@ class ENERGYCALCULATOR
 public:
 //spawns main RX thread according to passes parameters
 static void energyCalculatorThread(
-        MutexFIFO<std::vector<std::complex<float>>>& data_fifo,
+        MutexFIFO<std::vector<rx_cpu_format>>& data_fifo,
 	size_t& sblocks
 	);
 };

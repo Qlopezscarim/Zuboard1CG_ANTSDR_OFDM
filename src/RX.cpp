@@ -21,7 +21,7 @@ std::thread RX::rx_thread
 	std::string& rx_ant,
 	double& settling_time,
 	size_t& sblocks,
-	MutexFIFO<std::vector<std::complex<float>>>& data_fifo
+	MutexFIFO<std::vector<rx_cpu_format>>& data_fifo
 )
 {
 
@@ -193,7 +193,7 @@ size_t samps_per_buff,
 int num_requested_samples,
 double settling_time,
 std::vector<size_t> rx_channel_nums,
-MutexFIFO<std::vector<std::complex<float>>>& data_fifo //may need to be changed
+MutexFIFO<std::vector<rx_cpu_format>>& data_fifo //may need to be changed
 )
 {
 
@@ -266,7 +266,7 @@ while(not stop_signal_called)
         }
 	
 	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        data_fifo.push(buff); //This makes a copy which we want to re-use the buffer
+        //data_fifo.push(buff); //This makes a copy which we want to re-use the buffer
 	//num_block++;
         //then are happy to fill with new samples and repeat this process
 }
